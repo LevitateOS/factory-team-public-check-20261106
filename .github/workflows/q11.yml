@@ -30,4 +30,5 @@ jobs:
           git rev-parse HEAD
           sleep 20
           test "$(cat q11-value.txt)" = pass
+          test "${{ vars.Q11_EXPECT_PASS }}" != false
           conclusion=success
