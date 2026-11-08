@@ -6,20 +6,28 @@ on:
     branches: ['q11/base']
 permissions:
   contents: read
+  checks: write
 jobs:
   build:
     name: q11-build
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Verify the exact event commit
+      - name: Verify and report the exact event commit
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          check_id=$(gh api --method POST "repos/$GITHUB_REPOSITORY/check-runs" -f name=q11-evaluated -f head_sha="$GITHUB_SHA" -f status=in_progress -f details_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .id)
+          conclusion=failure
+          report() { gh api --method PATCH "repos/$GITHUB_REPOSITORY/check-runs/$check_id" -f status=completed -f conclusion="$conclusion" --jq '{id,name,head_sha,conclusion,app:.app.id}'; }
+          trap report EXIT
           git init -q .
           git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
           git fetch -q --depth=1 origin "$GITHUB_SHA"
           git checkout -q --detach FETCH_HEAD
           git rev-parse HEAD
-          sleep 10
+          sleep 20
           test "$(cat q11-value.txt)" = pass
+          conclusion=success
