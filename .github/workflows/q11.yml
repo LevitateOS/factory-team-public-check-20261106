@@ -19,7 +19,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          check_id=$(gh api --method POST "repos/$GITHUB_REPOSITORY/check-runs" -f name=q11-evaluated -f head_sha="$GITHUB_SHA" -f status=in_progress -f details_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .id)
+          check_id=$(gh api --method POST "repos/$GITHUB_REPOSITORY/check-runs" -f name=q11-build -f head_sha="$GITHUB_SHA" -f status=in_progress -f details_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .id)
           conclusion=failure
           report() { gh api --method PATCH "repos/$GITHUB_REPOSITORY/check-runs/$check_id" -f status=completed -f conclusion="$conclusion" --jq '{id,name,head_sha,conclusion,app:.app.id}'; }
           trap report EXIT
