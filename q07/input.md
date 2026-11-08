@@ -1,1 +1,1 @@
-Factory Q07 reviewed planning input, source B. Fresh consent is required.
+Factory Q07 reviewed planning input, source C. Fresh consent is required.
