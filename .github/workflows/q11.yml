@@ -1,0 +1,25 @@
+name: Factory Q11 contract
+on:
+  push:
+    branches: ['q11/**']
+  pull_request:
+    branches: ['q11/base']
+permissions:
+  contents: read
+jobs:
+  build:
+    name: q11-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify the exact event commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init -q .
+          git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          git fetch -q --depth=1 origin "$GITHUB_SHA"
+          git checkout -q --detach FETCH_HEAD
+          git rev-parse HEAD
+          sleep 10
+          test "$(cat q11-value.txt)" = pass
